@@ -29,7 +29,7 @@ function App() {
     }
   }
 
-  async function go(dir: string, digit: number) {
+  async function go() {
     /**
     if (dir === null || dir === '') {
       setMsg('请选择目录')
@@ -77,7 +77,7 @@ function App() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            go(dir, digit)
+            go()
           }}
         >
           <label>点击选择目录或将目录拖拽到这里</label>
