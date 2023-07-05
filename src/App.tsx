@@ -5,7 +5,7 @@ import "./App.css";
 import { read, readFile, utils, writeFile } from 'xlsx';
 import { useEffect } from 'react';
 import { open } from '@tauri-apps/api/dialog';
-import { readDir, readBinaryFile, BaseDirectory } from '@tauri-apps/api/fs';
+import { readDir, createDir, readBinaryFile, BaseDirectory } from '@tauri-apps/api/fs';
 import { getName, getVersion } from '@tauri-apps/api/app';
 import { listen } from '@tauri-apps/api/event';
 
@@ -29,6 +29,29 @@ function App() {
     }
   }
 
+  async function newFiles(dir) {
+    const newDir = dir + '/test'
+    await createDir(newDir, { recursive: true })
+
+    const sheetName = "Sheet1"
+
+    let ws_data = [
+      [ "案卷级档案", "姓名", "性别", "身份证号", "政治面貌", "密集架号", "总件数", '总页数' ]
+    ]
+    let ws0 = utils.aoa_to_sheet(ws_data);
+    let wb0 = utils.book_new();
+    utils.book_append_sheet(wb0, ws0, sheetName);
+    writeFile(wb0, newDir + "/人事案卷.xlsx");
+
+    let ws_data1 = [
+      [ "序号", "案卷号", "案卷级档号", "档号", "类号", "类别代号", "类别件号", '材料名称', '形成时间', '页数', '' ]
+    ];
+    let ws1 = utils.aoa_to_sheet(ws_data1);
+    let wb1 = utils.book_new();
+    utils.book_append_sheet(wb1, ws1, sheetName);
+    writeFile(wb1, newDir + "/人事卷内目录.xlsx");
+  }
+
   async function go() {
     if (dir === null || dir === '') {
       setMsg('请选择目录')
@@ -36,17 +59,57 @@ function App() {
       try {
         const entries = await readDir(dir)
         setMsg('处理中...')
+        await newFiles(dir)
+
         for (const entry of entries) {
+
           // ignore dirs
           if (entry.children === undefined) {
             // console.log(entry)
             try {
+              // TODO check if is xlsx to avoid read big file
               const contents = await readBinaryFile(dir + '/' + entry.name)
+
               // const x = read(dir + '/' + entry.name)
+              // const workbook = readFile(dir + '/' + entry.name)
               const workbook = read(contents)
-              console.log(workbook)
-              // console.log(x.Sheets)
-              // console.log(x.Sheets[sheet_name])
+              const sheeName = workbook.SheetNames[0]
+              const sheet = workbook.Sheets[sheeName]
+              // console.log(workbook)
+              
+              const ref = sheet['!ref']
+              const lastRow = ref.replace(/[A-Z]/g,'').split(':')[1]
+              console.log(lastRow)
+
+              const name = sheet.A2.v.replace('姓名：', '')
+              console.log(name)
+              
+              let docs = []
+              let startRow = 6
+              let sum = 0
+              let count = 0
+
+              for (let i = startRow; i < lastRow; i++) {
+                const cell = sheet['F' + i]
+                if (cell !== undefined) {
+                  const pages = Number(cell.v)
+                  sum += pages
+                  let date = sheet['C' + i].v.toString()
+                  date += sheet['D' + i].v.toString()
+                  date += sheet['E' + i].v.toString()
+                  const doc = {
+                    title: sheet['B' + i].v,
+                    date,
+                    pages 
+                  }
+                  docs.push(doc)
+                  count += 1
+                }
+              }
+              console.log(count)
+              console.log(sum)
+              console.log(docs)
+
             } catch(err) {
               console.log(err)
             }
@@ -60,7 +123,8 @@ function App() {
         }
         setMsg('完成')
       } catch(err) {
-        setMsg('只能选择目录');
+        console.log(err)
+        setMsg('只能选择目录')
       }
     }
   }
