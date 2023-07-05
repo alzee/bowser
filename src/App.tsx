@@ -14,7 +14,6 @@ const appName = await getName();
 
 function App() {
   const [name, setName] = useState("");
-  const [digit, setDigit] = useState(2);
   const [msg, setMsg] = useState("");
   const [dir, setDir] = useState("");
 
@@ -29,29 +28,6 @@ function App() {
     }
   }
 
-  async function newFiles(dir) {
-    const newDir = dir + '/test'
-    await createDir(newDir, { recursive: true })
-
-    const sheetName = "Sheet1"
-
-    let ws_data = [
-      [ "案卷级档案", "姓名", "性别", "身份证号", "政治面貌", "密集架号", "总件数", '总页数' ]
-    ]
-    let ws0 = utils.aoa_to_sheet(ws_data);
-    let wb0 = utils.book_new();
-    utils.book_append_sheet(wb0, ws0, sheetName);
-    writeFile(wb0, newDir + "/人事案卷.xlsx");
-
-    let ws_data1 = [
-      [ "序号", "案卷号", "案卷级档号", "档号", "类号", "类别代号", "类别件号", '材料名称', '形成时间', '页数', '' ]
-    ];
-    let ws1 = utils.aoa_to_sheet(ws_data1);
-    let wb1 = utils.book_new();
-    utils.book_append_sheet(wb1, ws1, sheetName);
-    writeFile(wb1, newDir + "/人事卷内目录.xlsx");
-  }
-
   async function go() {
     if (dir === null || dir === '') {
       setMsg('请选择目录')
@@ -59,7 +35,15 @@ function App() {
       try {
         const entries = await readDir(dir)
         setMsg('处理中...')
-        await newFiles(dir)
+
+        const newDir = dir + '/test'
+        await createDir(newDir, { recursive: true })
+
+        const sheetName = "Sheet1"
+
+        let ws_data0 = [
+          [ "案卷级档案", "姓名", "性别", "身份证号", "政治面貌", "密集架号", "总件数", '总页数' ],
+        ]
 
         for (const entry of entries) {
 
@@ -106,6 +90,24 @@ function App() {
                   count += 1
                 }
               }
+
+              let a = []
+              a[1] = name
+              a[6] = count
+              a[7] = sum
+              ws_data0.push(a)
+
+              let ws_data1 = [
+                [ "序号", "案卷号", "案卷级档号", "档号", "类号", "类别代号", "类别件号", '材料名称', '形成时间', '页数', '' ]
+              ]
+              let a1 = []
+              a1[0] = name
+              ws_data1.push(a1)
+              let ws1 = utils.aoa_to_sheet(ws_data1)
+              let wb1 = utils.book_new()
+              utils.book_append_sheet(wb1, ws1, sheetName)
+              writeFile(wb1, newDir + '/b' + name + '-人事卷内目录.xlsx')
+
               console.log(count)
               console.log(sum)
               console.log(docs)
@@ -121,6 +123,12 @@ function App() {
             // write to xlsx2
           }
         }
+
+        let ws0 = utils.aoa_to_sheet(ws_data0)
+        let wb0 = utils.book_new()
+        utils.book_append_sheet(wb0, ws0, sheetName)
+        writeFile(wb0, newDir + "/a人事案卷.xlsx")
+
         setMsg('完成')
       } catch(err) {
         console.log(err)
@@ -162,17 +170,7 @@ function App() {
             placeholder="点击选择目录或将目录拖拽到这里"
             value={dir}
           />
-          <div className="row2">
-          <input
-            id="digit"
-            type="number"
-            min="2"
-            required
-            onChange={(e) => setDigit(Number(e.currentTarget.value))}
-            placeholder="文件名长度"
-          />
           <button type="submit">确定</button>
-          </div>
         </form>
       </div>
       <p>{msg}</p>
