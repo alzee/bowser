@@ -63,10 +63,8 @@ function App() {
               
               const ref = sheet['!ref']
               const lastRow = ref.replace(/[A-Z]/g,'').split(':')[1]
-              console.log(lastRow)
 
               const name = sheet.A2.v.replace('姓名：', '')
-              console.log(name)
               
               let docs = []
               let startRow = 6
@@ -91,42 +89,35 @@ function App() {
                 }
               }
 
-              let a = []
-              a[1] = name
-              a[6] = count
-              a[7] = sum
-              ws_data0.push(a)
+              // console.log(count)
+              // console.log(sum)
+              // console.log(docs)
+
+              let arr0 = []
+              arr0[1] = name
+              arr0[6] = count
+              arr0[7] = sum
+              ws_data0.push(arr0)
 
               let ws_data1 = [
                 [ "序号", "案卷号", "案卷级档号", "档号", "类号", "类别代号", "类别件号", '材料名称', '形成时间', '页数', '' ]
               ]
-              let a1 = []
-              a1[0] = name
-              ws_data1.push(a1)
-              let ws1 = utils.aoa_to_sheet(ws_data1)
-              let wb1 = utils.book_new()
-              utils.book_append_sheet(wb1, ws1, sheetName)
+              let arr1 = []
+              arr1[0] = name
+              ws_data1.push(arr1)
+              console.log(ws_data1)
+              const wb1 = utils.book_new()
+              utils.book_append_sheet(wb1, utils.aoa_to_sheet(ws_data1), sheetName)
               writeFile(wb1, newDir + '/b' + name + '-人事卷内目录.xlsx')
-
-              console.log(count)
-              console.log(sum)
-              console.log(docs)
 
             } catch(err) {
               console.log(err)
             }
-            // do the thing
-            // is xlsx?
-            // is format valid?
-            // extract data
-            // write to xlsx1
-            // write to xlsx2
           }
         }
 
-        let ws0 = utils.aoa_to_sheet(ws_data0)
-        let wb0 = utils.book_new()
-        utils.book_append_sheet(wb0, ws0, sheetName)
+        const wb0 = utils.book_new()
+        utils.book_append_sheet(wb0, utils.aoa_to_sheet(ws_data0), sheetName)
         writeFile(wb0, newDir + "/a人事案卷.xlsx")
 
         setMsg('完成')
