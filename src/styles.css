@@ -82,10 +82,22 @@ button:active {
 input,
 button {
   outline: none;
+  display: block;
+  margin: 10px 0;
 }
 
 #greet-input {
   margin-right: 5px;
+}
+
+.row2{
+  display: flex;
+  justify-content: space-between;
+}
+
+.footer{
+  margin-top: 4rem;
+  color: #888888;
 }
 
 @media (prefers-color-scheme: dark) {

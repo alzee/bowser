@@ -5,3 +5,16 @@
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafb);
 }
+
+.tip{
+  text-align: left;
+  margin: 0 auto 30px;
+}
+
+#dir-input{
+  width: calc(100% - 2.4em);
+}
+
+#digit{
+  margin-right: 20px;
+}

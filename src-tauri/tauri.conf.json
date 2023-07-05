@@ -13,6 +13,18 @@
   "tauri": {
     "allowlist": {
       "all": false,
+      "dialog": {
+        "all": false,
+        "open": true
+      },
+      "fs": {
+        "all": false,
+        "readDir": true,
+        "renameFile": true
+      },
+      "app": {
+        "all": false
+      },
       "shell": {
         "all": false,
         "open": true
