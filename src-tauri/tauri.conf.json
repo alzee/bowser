@@ -20,7 +20,9 @@
       "fs": {
         "all": false,
         "readDir": true,
-        "renameFile": true
+        "readFile": true,
+        "renameFile": true,
+        "scope": ["*"]
       },
       "app": {
         "all": false

@@ -2,10 +2,10 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
-import { read, utils, writeFile } from 'xlsx';
+import { read, readFile, utils, writeFile } from 'xlsx';
 import { useEffect } from 'react';
 import { open } from '@tauri-apps/api/dialog';
-import { renameFile, readDir } from '@tauri-apps/api/fs';
+import { readDir, readBinaryFile, BaseDirectory } from '@tauri-apps/api/fs';
 import { getName, getVersion } from '@tauri-apps/api/app';
 import { listen } from '@tauri-apps/api/event';
 
@@ -39,7 +39,17 @@ function App() {
         for (const entry of entries) {
           // ignore dirs
           if (entry.children === undefined) {
-            console.log(entry)
+            // console.log(entry)
+            try {
+              const contents = await readBinaryFile(dir + '/' + entry.name)
+              // const x = read(dir + '/' + entry.name)
+              const workbook = read(contents)
+              console.log(workbook)
+              // console.log(x.Sheets)
+              // console.log(x.Sheets[sheet_name])
+            } catch(err) {
+              console.log(err)
+            }
             // do the thing
             // is xlsx?
             // is format valid?
