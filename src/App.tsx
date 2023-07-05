@@ -30,7 +30,6 @@ function App() {
   }
 
   async function go() {
-    /**
     if (dir === null || dir === '') {
       setMsg('请选择目录')
     } else {
@@ -40,12 +39,13 @@ function App() {
         for (const entry of entries) {
           // ignore dirs
           if (entry.children === undefined) {
-            const arr = entry.name!.split('.')
-            const ext = arr.pop()
-            // remove leadding 0s so don't need to worry about name.length gt or lt digit
-            const name = arr.join('.').replace(/^0+/, '')
-            const newName = name.padStart(digit, '0')
-            await renameFile(entry.path, dir + '/' + newName + '.' + ext);
+            console.log(entry)
+            // do the thing
+            // is xlsx?
+            // is format valid?
+            // extract data
+            // write to xlsx1
+            // write to xlsx2
           }
         }
         setMsg('完成')
@@ -53,7 +53,6 @@ function App() {
         setMsg('只能选择目录');
       }
     }
-   **/
   }
 
   document.addEventListener('contextmenu', event => event.preventDefault());
