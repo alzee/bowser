@@ -1,5 +1,6 @@
 - check if is xlsx to avoid read big file
 - open dir recursively
 - open dir in explorer
+- changelog page
 
 # vim:ft=yaml
