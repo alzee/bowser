@@ -22,8 +22,9 @@
         "readDir": true,
         "createDir": true,
         "readFile": true,
+        "writeFile": true,
         "renameFile": true,
-        "scope": ["*"]
+        "scope": ["**"]
       },
       "app": {
         "all": false

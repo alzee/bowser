@@ -2,10 +2,10 @@ import { useState } from "react";
 import reactLogo from "./assets/react.svg";
 import { invoke } from "@tauri-apps/api/tauri";
 import "./App.css";
-import { read, readFile, utils, writeFile } from 'xlsx';
+import { read, utils, write } from 'xlsx';
 import { useEffect } from 'react';
 import { open } from '@tauri-apps/api/dialog';
-import { readDir, createDir, readBinaryFile, BaseDirectory } from '@tauri-apps/api/fs';
+import { readDir, createDir, readBinaryFile, writeBinaryFile, BaseDirectory } from '@tauri-apps/api/fs';
 import { getName, getVersion } from '@tauri-apps/api/app';
 import { listen } from '@tauri-apps/api/event';
 
@@ -36,7 +36,7 @@ function App() {
         const entries = await readDir(dir)
         setMsg('处理中...')
 
-        const newDir = dir + '/test'
+        const newDir = dir + '/keyi'
         await createDir(newDir, { recursive: true })
 
         const sheetName = "Sheet1"
@@ -54,12 +54,9 @@ function App() {
               // TODO check if is xlsx to avoid read big file
               const contents = await readBinaryFile(dir + '/' + entry.name)
 
-              // const x = read(dir + '/' + entry.name)
-              // const workbook = readFile(dir + '/' + entry.name)
               const workbook = read(contents)
               const sheeName = workbook.SheetNames[0]
               const sheet = workbook.Sheets[sheeName]
-              // console.log(workbook)
               
               const ref = sheet['!ref']
               const lastRow = ref.replace(/[A-Z]/g,'').split(':')[1]
@@ -106,9 +103,10 @@ function App() {
               arr1[0] = name
               ws_data1.push(arr1)
               console.log(ws_data1)
-              const wb1 = utils.book_new()
-              utils.book_append_sheet(wb1, utils.aoa_to_sheet(ws_data1), sheetName)
-              writeFile(wb1, newDir + '/b' + name + '-人事卷内目录.xlsx')
+              const wb = utils.book_new()
+              utils.book_append_sheet(wb, utils.aoa_to_sheet(ws_data1), sheetName)
+              const data = write(wb, { type: "buffer", bookType: "xlsx" })
+              await writeBinaryFile(newDir + '/b' + name + '-人事卷内目录.xlsx', data)
 
             } catch(err) {
               console.log(err)
@@ -116,9 +114,10 @@ function App() {
           }
         }
 
-        const wb0 = utils.book_new()
-        utils.book_append_sheet(wb0, utils.aoa_to_sheet(ws_data0), sheetName)
-        writeFile(wb0, newDir + "/a人事案卷.xlsx")
+        const wb = utils.book_new()
+        utils.book_append_sheet(wb, utils.aoa_to_sheet(ws_data0), sheetName)
+        const data = write(wb, { type: "buffer", bookType: "xlsx" })
+        await writeBinaryFile(newDir + '/a人事案卷.xlsx', data)
 
         setMsg('完成')
       } catch(err) {
