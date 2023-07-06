@@ -102,7 +102,17 @@ function App() {
               let arr1 = []
               arr1[0] = name
               ws_data1.push(arr1)
-              console.log(ws_data1)
+
+              for (let i = 1; i <= docs.length; i++) {
+                const doc = docs[i-1]
+                arr1 = []
+                arr1[0] = i
+                arr1[7] = doc.title
+                arr1[8] = doc.date
+                arr1[9] = doc.pages
+                ws_data1.push(arr1)
+              }
+
               const wb = utils.book_new()
               utils.book_append_sheet(wb, utils.aoa_to_sheet(ws_data1), sheetName)
               const data = write(wb, { type: "buffer", bookType: "xlsx" })
