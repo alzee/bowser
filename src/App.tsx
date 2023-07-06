@@ -160,13 +160,12 @@ function App() {
       </ul>
 
       <div className="row">
-        <form
+        <form className="form"
           onSubmit={(e) => {
             e.preventDefault();
             main()
           }}
         >
-          <label>点击选择目录或将目录拖拽到这里</label>
           <input
             id="dir-input"
             onClick={() => getDir()}
