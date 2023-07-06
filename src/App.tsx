@@ -57,11 +57,15 @@ function App() {
               const workbook = read(contents)
               const sheeName = workbook.SheetNames[0]
               const sheet = workbook.Sheets[sheeName]
+              const name = sheet.A2.v.replace('姓名：', '')
               
               const ref = sheet['!ref']
-              const lastRow = ref.replace(/[A-Z]/g,'').split(':')[1]
-
-              const name = sheet.A2.v.replace('姓名：', '')
+              let lastRow
+              if (ref !== undefined) {
+                lastRow = Number(ref.replace(/[A-Z]/g,'').split(':')[1])
+              } else {
+                lastRow = 0
+              }
               
               let docs = []
               let startRow = 6
