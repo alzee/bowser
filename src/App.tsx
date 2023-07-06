@@ -9,13 +9,14 @@ import { readDir, createDir, readBinaryFile, writeBinaryFile, BaseDirectory } fr
 import { getName, getVersion } from '@tauri-apps/api/app';
 import { listen } from '@tauri-apps/api/event';
 
-const ver = await getVersion();
-const appName = await getName();
+const ver = await getVersion()
+const appName = await getName()
+const outputDir = 'keyi'
 
 function App() {
-  const [name, setName] = useState("");
-  const [msg, setMsg] = useState("");
-  const [dir, setDir] = useState("");
+  const [name, setName] = useState("")
+  const [msg, setMsg] = useState("")
+  const [dir, setDir] = useState("")
 
   listen<string>('tauri://file-drop', (event) => {
     setDir(event.payload[0])
@@ -28,7 +29,7 @@ function App() {
     }
   }
 
-  async function go() {
+  async function main() {
     if (dir === null || dir === '') {
       setMsg('请选择目录')
     } else {
@@ -36,7 +37,7 @@ function App() {
         const entries = await readDir(dir)
         setMsg('处理中...')
 
-        const newDir = dir + '/keyi'
+        const newDir = dir + '/' + outputDir
         await createDir(newDir, { recursive: true })
 
         const sheetName = "Sheet1"
@@ -120,7 +121,7 @@ function App() {
               const wb = utils.book_new()
               utils.book_append_sheet(wb, utils.aoa_to_sheet(ws_data1), sheetName)
               const data = write(wb, { type: "buffer", bookType: "xlsx" })
-              await writeBinaryFile(newDir + '/b' + name + '-人事卷内目录.xlsx', data)
+              await writeBinaryFile(newDir + '/' + name + '-人事卷内目录.xlsx', data)
 
             } catch(err) {
               console.log(err)
@@ -131,7 +132,7 @@ function App() {
         const wb = utils.book_new()
         utils.book_append_sheet(wb, utils.aoa_to_sheet(ws_data0), sheetName)
         const data = write(wb, { type: "buffer", bookType: "xlsx" })
-        await writeBinaryFile(newDir + '/a人事案卷.xlsx', data)
+        await writeBinaryFile(newDir + '/人事案卷.xlsx', data)
 
         setMsg('完成')
       } catch(err) {
@@ -151,10 +152,10 @@ function App() {
         </a>
       </div>
 
-      <h4>组织部转科怡</h4>
+      <h4>人事档案转科怡</h4>
       <ul className="tip">
-      <li>将组织部人事档案表格转换为科怡支持表格格式</li>
-      <li>选择组织部人事档案表格所在目录，点击确定</li>
+      <li>将人事档案表格转换为科怡支持表格格式</li>
+      <li>选择人事档案表格所在目录，点击确定</li>
       <li>转换后的表格将保存在同目录下</li>
       </ul>
 
@@ -162,7 +163,7 @@ function App() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            go()
+            main()
           }}
         >
           <label>点击选择目录或将目录拖拽到这里</label>
@@ -174,7 +175,7 @@ function App() {
             placeholder="点击选择目录或将目录拖拽到这里"
             value={dir}
           />
-          <button type="submit" className="btn">确定</button>
+          <button type="submit" className="btn">开始转换</button>
         </form>
       </div>
       <p>{msg}</p>
