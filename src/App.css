@@ -15,6 +15,6 @@
   width: calc(100% - 2.4em);
 }
 
-#digit{
-  margin-right: 20px;
+.btn{
+  width: 100%;
 }

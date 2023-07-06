@@ -170,7 +170,7 @@ function App() {
             placeholder="点击选择目录或将目录拖拽到这里"
             value={dir}
           />
-          <button type="submit">确定</button>
+          <button type="submit" className="btn">确定</button>
         </form>
       </div>
       <p>{msg}</p>
