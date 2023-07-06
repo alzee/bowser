@@ -135,6 +135,8 @@ function App() {
         await writeBinaryFile(newDir + '/人事案卷.xlsx', data)
 
         setMsg('完成')
+
+        // open newDir
       } catch(err) {
         console.log(err)
         setMsg('只能选择目录')
@@ -178,7 +180,9 @@ function App() {
         </form>
       </div>
       <p>{msg}</p>
-      <p className="footer">{appName} {ver}</p>
+      <p className="footer">{appName} {ver} <br/>
+      更新日志
+      </p>
 
     </div>
   );
