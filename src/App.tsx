@@ -114,8 +114,8 @@ function App() {
         let date
         if (sheet['C' + i] !== undefined) {
           date = sheet['C' + i].v.toString()
-          date += sheet['D' + i].v.toString()
-          date += sheet['E' + i].v.toString()
+          date += sheet['D' + i].v.toString().padStart(2, 0)
+          date += sheet['E' + i].v.toString().padStart(2, 0)
         }
         const doc = {
           sn,
