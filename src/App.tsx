@@ -11,15 +11,16 @@ import { listen } from '@tauri-apps/api/event';
 
 const ver = await getVersion()
 const appName = await getName()
-const outputDir = 'keyi'
+const outputDir = '转科怡'
 
 function App() {
   const [msg, setMsg] = useState("")
   const [dir, setDir] = useState("")
-  const [file, setFile] = useState("")
+  const [basicInfoFile, setBasicInfoFile] = useState("")
   const [prefix, setPrefix] = useState("")
-  const [basicInfoSheet, setBasicInfoSheet] = useState("")
   const sheetName = "Sheet1"
+  let files = []
+  let basicInfoSheet
 
   listen<string>('tauri://file-drop', (event) => {
     setDir(event.payload[0])
@@ -35,11 +36,11 @@ function App() {
     setPrefix(e.target.value)
   }
 
-  async function getFile() {
+  async function getBasicInfoFile() {
     const file = await open({directory: false})
     if (file !== null && file !== '') {
-      setFile(file)
-      setBasicInfoSheet(await getSheet(file))
+      setBasicInfoFile(file)
+      basicInfoSheet = await getSheet(file)
     }
   }
 
@@ -47,17 +48,11 @@ function App() {
     return false
   }
 
-  async function importXlsx(file) {
-    let data = {}
-    return data
-  }
-
   async function exportAnJuan(aoa) {
     const ws_data = [
       ...[[ "案卷级档案", "姓名", "性别", "身份证号", "政治面貌", "密集架号", "总件数", '总页数' ]],
       ...aoa
     ]
-    console.log(ws_data);
     const wb = utils.book_new()
     utils.book_append_sheet(wb, utils.aoa_to_sheet(ws_data), sheetName)
     const data = write(wb, { type: "buffer", bookType: "xlsx" })
@@ -140,7 +135,6 @@ function App() {
 
     if (basicInfoSheet !== null && basicInfoSheet !== undefined) {
       const basicInfo = await extractMoreData(name, basicInfoSheet)
-      console.log(basicInfo)
       if (basicInfo !== undefined ) {
         info.more = basicInfo
       }
@@ -201,24 +195,33 @@ function App() {
 
         for (const entry of entries) {
           if (entry.children === undefined) {
-            // if entry is file
-            const individual = await extractData(await getSheet(entry.path))
-            console.log(individual)
-            let arr = []
-            arr[0] = prefix + '-' + individual.sn //案卷级档号
-            arr[1] = individual.name //姓名
+            files.push(entry)
+          } else if (entry.name === outputDir){
+            console.log(outputDir)
+          } else {
+            // if entry is dir and is not outputDir
+            // console.log(entry)
+          }
+        }
+
+        for (const file of files) {
+          console.log(files)
+          const individual = await extractData(await getSheet(file.path))
+          let arr = []
+          arr[0] = prefix + '-' + individual.sn //案卷级档号
+          arr[1] = individual.name //姓名
+          if (individual.more !== undefined) {
             arr[2] = individual.more.gender //性别
             arr[3] = individual.more.id //身份证号
             arr[4] = individual.more.status //政治面貌
-            // arr[5] = '' //密集架号
-            arr[6] = individual.count //总件数
-            arr[7] = individual.sum //总页数
-            aoa.push(arr)
-            
-            // export JuanNei
-            exportJuanNei(individual)
-            let file = entry
           }
+          // arr[5] = '' //密集架号
+          arr[6] = individual.count //总件数
+          arr[7] = individual.sum //总页数
+          aoa.push(arr)
+
+          // export JuanNei
+          exportJuanNei(individual)
         }
 
         // export AnJuan
@@ -246,8 +249,11 @@ function App() {
       <h4>人事档案转科怡</h4>
       <ul className="tip">
       <li>将人事档案表格转换为科怡支持表格格式</li>
-      <li>选择人事档案表格所在目录，点击<strong>开始转换</strong></li>
-      <li>转换后的表格将保存在同目录下</li>
+      <li>选择人事档案表格所在目录</li>
+      <li>填写案卷级档号前缀</li>
+      <li>选择人员基本信息表（提供性别、身份证号、政治面貌等信息，非必须）</li>
+      <li>点击<strong>开始转换</strong></li>
+      <li>转换后的表格将保存在同目录下的<strong>转科怡</strong>目录</li>
       </ul>
 
       <div className="row">
@@ -277,11 +283,11 @@ function App() {
           <label>人员基本信息表</label>
           <input
             className="input"
-            onClick={() => getFile()}
+            onClick={() => getBasicInfoFile()}
             readOnly
             required
             placeholder="点击选择人员基本信息表"
-            value={file}
+            value={basicInfoFile}
           />
           <button type="submit" className="btn">开始转换</button>
         </form>
