@@ -70,7 +70,7 @@ function App() {
         const birth = sheet['F' + row].v
         const ethnic = sheet['G' + row].v
         const homeland = sheet['H' + row].v
-        const status = sheet['K' + row].v
+        const status = sheet['K' + row] !== undefined ? sheet['K' + row].v : ''
         return {
           name,
           gender,
