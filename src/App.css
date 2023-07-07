@@ -11,8 +11,9 @@
   margin: 0 auto 30px;
 }
 
-#dir-input{
+.input{
   width: calc(100% - 2.4em);
+  margin-bottom: 1.3rem;
 }
 
 .btn{
@@ -21,4 +22,9 @@
 
 .form{
   width: 17.5rem;
+}
+
+.asteroid{
+  color: red;
+  font-weight: bold;
 }

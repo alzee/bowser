@@ -168,12 +168,22 @@ function App() {
             main()
           }}
         >
+          <label>人事档案文件夹<span className="asteroid">*</span></label>
           <input
-            id="dir-input"
+            className="input"
             onClick={() => getDir()}
             readOnly
             required
             placeholder="点击选择目录或将目录拖拽到这里"
+            value={dir}
+          />
+          <label>人员基本信息表</label>
+          <input
+            className="input"
+            onClick={() => getFile()}
+            readOnly
+            required
+            placeholder="点击选择人员基本信息表"
             value={dir}
           />
           <button type="submit" className="btn">开始转换</button>
