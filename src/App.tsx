@@ -14,7 +14,6 @@ const appName = await getName()
 const outputDir = 'keyi'
 
 function App() {
-  const [name, setName] = useState("")
   const [msg, setMsg] = useState("")
   const [dir, setDir] = useState("")
   const [file, setFile] = useState("")
@@ -30,6 +29,9 @@ function App() {
     if (!Array.isArray(dir) && dir !== null) {
       setDir(dir)
     }
+  }
+  function prefixChange(e) {
+    setPrefix(e.target.value)
   }
 
   async function getFile() {
@@ -147,10 +149,16 @@ function App() {
     for (let i = 1; i <= individual.docs.length; i++) {
       const doc = individual.docs[i-1]
       aoa = []
-      aoa[0] = i
-      aoa[7] = doc.title
-      aoa[8] = doc.date
-      aoa[9] = doc.pages
+      aoa[0] = i  //序号
+      aoa[1] = individual.sn  //案卷号
+      aoa[2] = prefix + '-' + individual.sn //案卷级档号
+      aoa[3] = prefix + '-' + individual.sn + '-' //档号
+      aoa[4] = doc.cateid //类别号
+      aoa[5] = doc.cateid.split('-')[0] //类别代号
+      aoa[6] = doc.cateid.split('-')[doc.cateid.split('-').length - 1] //类别件号
+      aoa[7] = doc.title //材料名称
+      aoa[8] = doc.date //形成时间
+      aoa[9] = doc.pages //页数
       ws_data.push(aoa)
     }
 
@@ -248,10 +256,11 @@ function App() {
           />
           <label>案卷级档号前缀<span className="asteroid">*</span><br/>格式：YCSY01-RST01-1</label>
           <input
-            name="prefix"
             className="input"
             required
             placeholder="填写案卷级档号前缀"
+            onChange={prefixChange}
+            value={prefix}
           />
           <label>人员基本信息表</label>
           <input
