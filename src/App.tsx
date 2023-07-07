@@ -18,6 +18,7 @@ function App() {
   const [dir, setDir] = useState("")
   const [file, setFile] = useState("")
   const [prefix, setPrefix] = useState("")
+  const [basicInfoSheet, setBasicInfoSheet] = useState("")
   const sheetName = "Sheet1"
 
   listen<string>('tauri://file-drop', (event) => {
@@ -36,9 +37,9 @@ function App() {
 
   async function getFile() {
     const file = await open({directory: false})
-    if (file !== null) {
-      console.log(file)
+    if (file !== null && file !== '') {
       setFile(file)
+      setBasicInfoSheet(await getSheet(file))
     }
   }
 
@@ -129,13 +130,23 @@ function App() {
       }
     }
 
-    return {
+    let info = {
       name,
       sn,
       count,
       sum,
       docs
     }
+
+    if (basicInfoSheet !== null && basicInfoSheet !== undefined) {
+      const basicInfo = await extractMoreData(name, basicInfoSheet)
+      console.log(basicInfo)
+      if (basicInfo !== undefined ) {
+        info.more = basicInfo
+      }
+    } 
+
+    return info
   }
 
   async function exportJuanNei(individual) {
@@ -176,13 +187,6 @@ function App() {
   }
 
   async function main() {
-    if (file === null || file === '') {
-    } else {
-      const basicInfoSheet = await getSheet(file)
-      // const basicInfo = await extractMoreData('李志浩', basicInfoSheet)
-      // console.log(basicInfo)
-    }
-
     if (dir === null || dir === '') {
       setMsg('请选择目录')
     } else {
