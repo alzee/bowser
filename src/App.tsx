@@ -17,6 +17,7 @@ function App() {
   const [name, setName] = useState("")
   const [msg, setMsg] = useState("")
   const [dir, setDir] = useState("")
+  const [file, setFile] = useState("")
 
   listen<string>('tauri://file-drop', (event) => {
     setDir(event.payload[0])
@@ -29,16 +30,44 @@ function App() {
     }
   }
 
+  async function getFile() {
+    const file = await open({directory: false})
+    // const contents = await readBinaryFile(file)
+    // console.log(contents)
+    if (file !== null) {
+      console.log(file)
+      setFile(file)
+    }
+  }
+
+  function isXlsx() {
+    return false
+  }
+
+  function processData(file) {
+    if (isXlsx(file)) {
+      //
+    } else {
+      setMsg(`[${file}] 不是有效的xls/xlsx文件`)
+    }
+  }
+
   async function main() {
+    if (file === null || file === '') {
+    } else {
+    }
+
     if (dir === null || dir === '') {
       setMsg('请选择目录')
     } else {
       try {
-        const entries = await readDir(dir)
+        const entries = await readDir(dir, { recursive: true })
         setMsg('处理中...')
 
         const newDir = dir + '/' + outputDir
         await createDir(newDir, { recursive: true })
+
+        processData(file)
 
         const sheetName = "Sheet1"
 
@@ -46,14 +75,19 @@ function App() {
           [ "案卷级档案", "姓名", "性别", "身份证号", "政治面貌", "密集架号", "总件数", '总页数' ],
         ]
 
-        for (const entry of entries) {
 
-          // ignore dirs
+        for (const entry of entries) {
+          // if entry is dir
+
+
+          console.log(entry)
+          let xlsxFile = entry
+
           if (entry.children === undefined) {
-            // console.log(entry)
+            // if entry is file
             try {
               // TODO check if is xlsx to avoid read big file
-              const contents = await readBinaryFile(dir + '/' + entry.name)
+              const contents = await readBinaryFile(dir + '/' + xlsxFile.name)
 
               const workbook = read(contents)
               const sheeName = workbook.SheetNames[0]
@@ -126,6 +160,8 @@ function App() {
             } catch(err) {
               console.log(err)
             }
+          } else {
+            // if entry is dir
           }
         }
 
@@ -184,7 +220,7 @@ function App() {
             readOnly
             required
             placeholder="点击选择人员基本信息表"
-            value={dir}
+            value={file}
           />
           <button type="submit" className="btn">开始转换</button>
         </form>
