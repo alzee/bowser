@@ -204,8 +204,16 @@ function App() {
             // if entry is file
             const individual = await extractData(await getSheet(entry.path))
             console.log(individual)
-            // append AnJuan ws_data
-            // aoa = [[1,2,3,4,5],[2,3,4,5,6]]
+            let arr = []
+            arr[0] = prefix + '-' + individual.sn //案卷级档号
+            arr[1] = individual.name //姓名
+            arr[2] = individual.more.gender //性别
+            arr[3] = individual.more.id //身份证号
+            arr[4] = individual.more.status //政治面貌
+            // arr[5] = '' //密集架号
+            arr[6] = individual.count //总件数
+            arr[7] = individual.sum //总页数
+            aoa.push(arr)
             
             // export JuanNei
             exportJuanNei(individual)
