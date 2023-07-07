@@ -110,13 +110,17 @@ function App() {
         let date
         if (sheet['C' + i] !== undefined) {
           date = sheet['C' + i].v.toString()
+        }
+        if (sheet['D' + i] !== undefined) {
           date += sheet['D' + i].v.toString().padStart(2, 0)
+        }
+        if (sheet['E' + i] !== undefined) {
           date += sheet['E' + i].v.toString().padStart(2, 0)
         }
         const doc = {
           sn,
-          cateid: sheet['A' + i].v,
-          title: sheet['B' + i].v,
+          cateid: sheet['A' + i] !== undefined ? sheet['A' + i].v : '',
+          title: sheet['B' + i] !== undefined ? sheet['B' + i].v : '',
           date,
           pages 
         }
@@ -180,6 +184,16 @@ function App() {
     return workbook.Sheets[sheeName]
   }
 
+  async function getFilesInDir(entries) {
+    for (const e of entries) {
+      if (e.children === undefined) {
+        files.push(e)
+      } else if (e.name !== outputDir) {
+        getFilesInDir(e.children)
+      }
+    }
+  }
+
   async function main() {
     if (dir === null || dir === '') {
       setMsg('请选择目录')
@@ -193,19 +207,9 @@ function App() {
 
         let aoa = []
 
-        for (const entry of entries) {
-          if (entry.children === undefined) {
-            files.push(entry)
-          } else if (entry.name === outputDir){
-            console.log(outputDir)
-          } else {
-            // if entry is dir and is not outputDir
-            // console.log(entry)
-          }
-        }
+        await getFilesInDir(entries)
 
         for (const file of files) {
-          console.log(files)
           const individual = await extractData(await getSheet(file.path))
           let arr = []
           arr[0] = prefix + '-' + individual.sn //案卷级档号
@@ -231,7 +235,8 @@ function App() {
 
       } catch(err) {
         console.log(err)
-        setMsg('只能选择目录')
+        // setMsg('只能选择目录')
+        setMsg('表格格式不匹配')
       }
     }
   }
