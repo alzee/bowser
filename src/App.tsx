@@ -51,7 +51,7 @@ function App() {
 
   async function getBasicInfoFile() {
     const file = await open({directory: false})
-    if (file !== null && file !== '') {
+    if (!Array.isArray(file) && file !== null && file !== '') {
       setBasicInfoFile(file)
       basicInfoSheet = await getSheet(file)
     }
