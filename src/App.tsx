@@ -184,7 +184,7 @@ function App() {
       aoa[0] = i  //序号
       aoa[1] = individual.sn  //案卷号
       aoa[2] = prefix + '-' + individual.sn //案卷级档号
-      aoa[3] = prefix + '-' + individual.sn + '-' //档号
+      aoa[3] = prefix + '-' + individual.sn + '-' + i //档号
       aoa[4] = doc.cateid //类别号
       aoa[5] = doc.cateid.split('-')[0] //类别代号
       aoa[6] = doc.cateid.split('-')[doc.cateid.split('-').length - 1] //类别件号
