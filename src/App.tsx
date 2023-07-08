@@ -44,8 +44,13 @@ function App() {
     }
   }
 
-  function isXlsx() {
-    return false
+  function isXlsx(filePath) {
+    const ext = filePath.split('.')[filePath.split.length - 1]
+    if (ext === 'xlsx' || ext === 'xls') {
+      return true
+    } else {
+      return false
+    }
   }
 
   async function exportAnJuan(aoa) {
@@ -187,7 +192,9 @@ function App() {
   async function getFilesInDir(entries) {
     for (const e of entries) {
       if (e.children === undefined) {
-        files.push(e)
+        if (isXlsx(e.path)) {
+          files.push(e)
+        }
       } else if (e.name !== outputDir) {
         getFilesInDir(e.children)
       }
