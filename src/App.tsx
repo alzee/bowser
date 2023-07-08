@@ -19,7 +19,7 @@ interface MoreDate {
   org: string
 }
 interface Entries {
-  children?: [],
+  children?: Entries[],
   name: string,
   path: string
 }
@@ -32,8 +32,8 @@ function App() {
   const [basicInfoFile, setBasicInfoFile] = useState("")
   const [prefix, setPrefix] = useState("")
   const sheetName = "Sheet1"
-  let files = []
-  let basicInfoSheet
+  let files: Entries[] = []
+  let basicInfoSheet: any
 
   listen<string>('tauri://file-drop', (event) => {
     setDir(event.payload[0])
@@ -45,7 +45,7 @@ function App() {
       setDir(dir)
     }
   }
-  function prefixChange(e) {
+  function prefixChange(e: any) {
     setPrefix(e.target.value)
   }
 
@@ -56,7 +56,7 @@ function App() {
     }
   }
 
-  function isXlsx(filePath) {
+  function isXlsx(filePath: string) {
     const ext = filePath.split('.')[filePath.split.length - 1]
     if (ext === 'xlsx' || ext === 'xls') {
       return true
@@ -65,7 +65,7 @@ function App() {
     }
   }
 
-  async function exportAnJuan(aoa) {
+  async function exportAnJuan(aoa: any) {
     const ws_data = [
       ...[[ "案卷级档案", "姓名", "性别", "身份证号", "政治面貌", "密集架号", "总件数", '总页数', '单位' ]],
       ...aoa
@@ -76,7 +76,7 @@ function App() {
     await writeBinaryFile(dir + '/' + outputDir + '/人事案卷.xlsx', data)
   }
 
-  async function extractMoreData(name, sheet) {
+  async function extractMoreData(name: string, sheet: any) {
     for (const key in sheet) {
       if (sheet[key].v === name) {
         const row = key.replace(/[A-Z]*/, '')
@@ -102,7 +102,7 @@ function App() {
     }
   }
 
-  async function extractData(sheet) {
+  async function extractData(sheet: any) {
     const name = sheet.A2.v.split('：')[2].replace(/ /g, '')
     const sn = sheet.A2.v.split('：')[1].replace(/[^\x00-\x7F]/g, "").replace(/ /g, '')
 
@@ -170,7 +170,7 @@ function App() {
     return info
   }
 
-  async function exportJuanNei(individual) {
+  async function exportJuanNei(individual: any) {
     let ws_data = [
       [ "序号", "案卷号", "案卷级档号", "档号", "类号", "类别代号", "类别件号", '材料名称', '形成时间', '页数', '' ]
     ]
@@ -200,14 +200,14 @@ function App() {
     await writeBinaryFile(dir + '/' + outputDir + '/' + individual.name + '-人事卷内目录.xlsx', contents)
   }
 
-  async function getSheet(path) {
+  async function getSheet(path: string) {
     const contents = await readBinaryFile(path)
     const workbook = read(contents)
     const sheeName = workbook.SheetNames[0]
     return workbook.Sheets[sheeName]
   }
 
-  async function getFilesInDir(entries) {
+  async function getFilesInDir(entries: any[]) {
     for (const e of entries) {
       if (e.children === undefined) {
         if (isXlsx(e.path)) {
