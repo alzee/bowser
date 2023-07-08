@@ -15,6 +15,8 @@ const outputDir = '转科怡'
 
 function App() {
   const [msg, setMsg] = useState("")
+  const [msg2, setMsg2] = useState("")
+  const [msg3, setMsg3] = useState("")
   const [dir, setDir] = useState("")
   const [basicInfoFile, setBasicInfoFile] = useState("")
   const [prefix, setPrefix] = useState("")
