@@ -53,7 +53,6 @@ function App() {
     const file = await open({directory: false})
     if (!Array.isArray(file) && file !== null && file !== '') {
       setBasicInfoFile(file)
-      basicInfoSheet = await getSheet(file)
     }
   }
 
@@ -234,6 +233,10 @@ function App() {
         let aoa = []
 
         await getFilesInDir(entries)
+
+        if (basicInfoFile!== null && basicInfoFile!== '') {
+          basicInfoSheet = await getSheet(basicInfoFile)
+        }
 
         for (const file of files) {
           setMsg2(file.path)
