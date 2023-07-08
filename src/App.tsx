@@ -12,6 +12,17 @@ import { listen } from '@tauri-apps/api/event';
 const ver = await getVersion()
 const appName = await getName()
 const outputDir = '转科怡'
+interface MoreDate {
+  gender: string,
+  id: string,
+  status: string,
+  org: string
+}
+interface Entries {
+  children?: [],
+  name: string,
+  path: string
+}
 
 function App() {
   const [msg, setMsg] = useState("")
@@ -57,7 +68,7 @@ function App() {
 
   async function exportAnJuan(aoa) {
     const ws_data = [
-      ...[[ "案卷级档案", "姓名", "性别", "身份证号", "政治面貌", "密集架号", "总件数", '总页数' ]],
+      ...[[ "案卷级档案", "姓名", "性别", "身份证号", "政治面貌", "密集架号", "总件数", '总页数', '单位' ]],
       ...aoa
     ]
     const wb = utils.book_new()
@@ -141,7 +152,13 @@ function App() {
       sn,
       count,
       sum,
-      docs
+      docs,
+      more: {
+        gender: '',
+        id: '',
+        status: '',
+        org: ''
+      }
     }
 
     if (basicInfoSheet !== null && basicInfoSheet !== undefined) {
@@ -232,6 +249,7 @@ function App() {
           // arr[5] = '' //密集架号
           arr[6] = individual.count //总件数
           arr[7] = individual.sum //总页数
+          arr[8] = individual.more.org //单位
           aoa.push(arr)
 
           // export JuanNei
