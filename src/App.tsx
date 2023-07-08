@@ -219,6 +219,7 @@ function App() {
         await getFilesInDir(entries)
 
         for (const file of files) {
+          setMsg2(file.path)
           const individual = await extractData(await getSheet(file.path))
           let arr = []
           arr[0] = prefix + '-' + individual.sn //案卷级档号
@@ -240,6 +241,7 @@ function App() {
         // export AnJuan
         exportAnJuan(aoa)
 
+        setMsg2(`输出目录：[${dir}/${outputDir}/]`)
         setMsg('完成')
 
       } catch(err) {
@@ -307,6 +309,7 @@ function App() {
         </form>
       </div>
       <p>{msg}</p>
+      <p>{msg2}</p>
       <p className="footer">{appName} {ver} <br/>
       更新日志
       </p>
