@@ -183,7 +183,7 @@ function App() {
       if (sheet[key].v === org) {
         const row = key.replace(/[A-Z]*/, '')
         const sn = sheet['C' + row].v
-        return sn.substr(0, a.lastIndexOf('-'))
+        return sn.substr(0, sn.lastIndexOf('-'))
       }
     }
   }
