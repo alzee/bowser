@@ -12,12 +12,6 @@ import { listen } from '@tauri-apps/api/event';
 const ver = await getVersion()
 const appName = await getName()
 const outputDir = '转科怡'
-interface MoreDate {
-  gender: string,
-  id: string,
-  status: string,
-  org: string
-}
 interface Entries {
   children?: Entries[],
   name: string,
@@ -30,10 +24,11 @@ function App() {
   const [msg3, setMsg3] = useState("")
   const [dir, setDir] = useState("")
   const [basicInfoFile, setBasicInfoFile] = useState("")
-  const [prefix, setPrefix] = useState("")
+  const [archiveSnFile, setArchiveSnFile] = useState("")
   const sheetName = "Sheet1"
   let files: Entries[] = []
   let basicInfoSheet: any
+  let archiveSnSheet: any
 
   listen<string>('tauri://file-drop', (event) => {
     setDir(event.payload[0])
@@ -45,14 +40,18 @@ function App() {
       setDir(dir)
     }
   }
-  function prefixChange(e: any) {
-    setPrefix(e.target.value)
-  }
 
   async function getBasicInfoFile() {
     const file = await open({directory: false})
     if (!Array.isArray(file) && file !== null && file !== '') {
       setBasicInfoFile(file)
+    }
+  }
+
+  async function getArchiveSnFile() {
+    const file = await open({directory: false})
+    if (!Array.isArray(file) && file !== null && file !== '') {
+      setArchiveSnFile(file)
     }
   }
 
@@ -152,6 +151,7 @@ function App() {
       count,
       sum,
       docs,
+      archiveSn: '',
       more: {
         gender: '',
         id: '',
@@ -167,7 +167,25 @@ function App() {
       }
     } 
 
+    if (archiveSnSheet !== null && archiveSnSheet !== undefined) {
+      const archiveSn = await extractArchiveSn(info.more.org, archiveSnSheet)
+      if (archiveSn !== undefined ) {
+        info.archiveSn = archiveSn
+        // console.log(archiveSn)
+      }
+    } 
+
     return info
+  }
+
+  async function extractArchiveSn(org: string, sheet: any) {
+    for (const key in sheet) {
+      if (sheet[key].v === org) {
+        const row = key.replace(/[A-Z]*/, '')
+        const sn = sheet['C' + row].v
+        return sn.substr(0, a.lastIndexOf('-'))
+      }
+    }
   }
 
   async function exportJuanNei(individual: any) {
@@ -183,8 +201,8 @@ function App() {
       aoa = []
       aoa[0] = i  //序号
       aoa[1] = individual.sn  //案卷号
-      aoa[2] = prefix + '-' + individual.sn //案卷级档号
-      aoa[3] = prefix + '-' + individual.sn + '-' + i //档号
+      aoa[2] = individual.archiveSn + '-' + individual.sn //案卷级档号
+      aoa[3] = individual.archiveSn + '-' + individual.sn + '-' + i //档号
       aoa[4] = doc.cateid //类别号
       aoa[5] = doc.cateid.split('-')[0] //类别代号
       aoa[6] = doc.cateid.split('-')[doc.cateid.split('-').length - 1] //类别件号
@@ -234,15 +252,19 @@ function App() {
 
         await getFilesInDir(entries)
 
-        if (basicInfoFile!== null && basicInfoFile!== '') {
+        if (basicInfoFile !== null && basicInfoFile !== '') {
           basicInfoSheet = await getSheet(basicInfoFile)
+        }
+
+        if (archiveSnFile !== null && archiveSnFile !== '') {
+          archiveSnSheet = await getSheet(archiveSnFile)
         }
 
         for (const file of files) {
           setMsg2(file.path)
           const individual = await extractData(await getSheet(file.path))
           let arr = []
-          arr[0] = prefix + '-' + individual.sn //案卷级档号
+          arr[0] = individual.archiveSn + '-' + individual.sn //案卷级档号
           arr[1] = individual.name //姓名
           if (individual.more !== undefined) {
             arr[2] = individual.more.gender //性别
@@ -289,6 +311,7 @@ function App() {
       <li>选择人事档案表格所在目录</li>
       <li>填写案卷级档号前缀</li>
       <li>选择人员基本信息表（提供性别、身份证号、政治面貌等信息，非必须）</li>
+      <li>选择单位案卷级档号对应表（提供单位案卷级档号，非必须）</li>
       <li>点击<strong>开始转换</strong></li>
       <li>转换后的表格将保存在同目录下的<strong>转科怡</strong>目录</li>
       </ul>
@@ -309,14 +332,6 @@ function App() {
             placeholder="点击选择目录或将目录拖拽到这里"
             value={dir}
           />
-          <label>案卷级档号前缀<span className="asteroid">*</span><br/>格式：YCSY01-RST01-1</label>
-          <input
-            className="input"
-            required
-            placeholder="填写案卷级档号前缀"
-            onChange={prefixChange}
-            value={prefix}
-          />
           <label>人员基本信息表</label>
           <input
             className="input"
@@ -325,6 +340,15 @@ function App() {
             required
             placeholder="点击选择人员基本信息表"
             value={basicInfoFile}
+          />
+          <label>单位案卷级档号对应表</label>
+          <input
+            className="input"
+            onClick={() => getArchiveSnFile()}
+            readOnly
+            required
+            placeholder="点击选择单位案卷级档号对应表"
+            value={archiveSnFile}
           />
           <button type="submit" className="btn">开始转换</button>
         </form>
