@@ -171,7 +171,7 @@ function App() {
       const archiveSn = await extractArchiveSn(info.more.org, archiveSnSheet)
       if (archiveSn !== undefined ) {
         info.archiveSn = archiveSn
-        // console.log(archiveSn)
+        console.log(archiveSn)
       }
     } 
 
@@ -182,8 +182,8 @@ function App() {
     for (const key in sheet) {
       if (sheet[key].v === org) {
         const row = key.replace(/[A-Z]*/, '')
-        const sn = sheet['C' + row].v
-        return sn.substr(0, sn.lastIndexOf('-'))
+        const sn = sheet['C' + row].v.split('-')
+        return `${sn[0]}-${sn[1]}-${sn[2]}`
       }
     }
   }
