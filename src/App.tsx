@@ -11,7 +11,6 @@ import { listen } from '@tauri-apps/api/event';
 
 const ver = await getVersion()
 const appName = await getName()
-const outputDir = '转科怡'
 interface Entries {
   children?: Entries[],
   name: string,
@@ -25,7 +24,9 @@ function App() {
   const [dir, setDir] = useState("")
   const [basicInfoFile, setBasicInfoFile] = useState("")
   const [archiveSnFile, setArchiveSnFile] = useState("")
-  const sheetName = "Sheet1"
+  const sheetName = "档案目录"
+  const pageCol = 'F'
+  const outputDir = '卷内'
   let files: Entries[] = []
   let basicInfoSheet: any
   let archiveSnSheet: any
@@ -104,6 +105,8 @@ function App() {
   async function extractData(sheet: any) {
     const name = sheet.A2.v.split('：')[2].replace(/ /g, '')
     const sn = sheet.A2.v.split('：')[1].replace(/[^\x00-\x7F]/g, "").replace(/ /g, '')
+    // const name = ''
+    // const sn = ''
 
     const ref = sheet['!ref']
     let lastRow
@@ -119,7 +122,7 @@ function App() {
     let count = 0
 
     for (let i = startRow; i < lastRow; i++) {
-      const cell = sheet['G' + i]
+      const cell = sheet[pageCol + i]
       if (cell !== undefined) {
         const pages = Number(cell.v)
         sum += pages
@@ -135,7 +138,7 @@ function App() {
         }
         const doc = {
           sn,
-          cateid: sheet['A' + i] !== undefined ? sheet['A' + i].v : '',
+          cateid: sheet['A' + i] !== undefined ? sheet['A' + i].v.toString() : '',
           title: sheet['B' + i] !== undefined ? sheet['B' + i].v : '',
           date,
           pages 
@@ -263,6 +266,16 @@ function App() {
         for (const file of files) {
           setMsg2(file.path)
           const individual = await extractData(await getSheet(file.path))
+
+          // Extract name and sn form filename
+          if (individual.name === undefined) {
+            const fileName = file.name.split('.')[0]
+              const sn = parseInt(fileName)
+              const name = fileName.replace(sn, '')
+              individual.name = name
+              individual.sn = sn
+          }
+
           let arr = []
           arr[0] = individual.archiveSn + '-' + individual.sn //案卷级档号
           arr[1] = individual.name //姓名
