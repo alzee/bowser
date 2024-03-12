@@ -103,8 +103,21 @@ function App() {
   }
 
   async function extractData(sheet: any) {
-    const name = sheet.A2.v.split('：')[2].replace(/ /g, '')
-    const sn = sheet.A2.v.split('：')[1].replace(/[^\x00-\x7F]/g, "").replace(/ /g, '')
+    const arr = sheet.A2.v.split('：')
+    // console.log(arr)
+    let name
+    let sn
+    if (arr[2]) {
+      // 序号：123 姓名：蔡正树
+      // console.log('found 2 ：')
+      name = arr[2].replace(/ /g, '')
+      sn = arr[1].replace(/[^\x00-\x7F]/g, "").replace(/ /g, '')
+    } else {
+      // 姓名：蔡正树
+      // console.log('found 1 ：')
+      name = arr[1].replace(/ /g, '')
+      sn = ''
+    }
     // const name = ''
     // const sn = ''
 
