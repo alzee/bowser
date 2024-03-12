@@ -283,10 +283,10 @@ function App() {
           // Extract name and sn form filename
           if (individual.name === undefined) {
             const fileName = file.name.split('.')[0]
-              const sn = parseInt(fileName)
-              const name = fileName.replace(sn, '')
-              individual.name = name
-              individual.sn = sn
+            const sn = fileName
+            const name = fileName.replace(sn, '')
+            individual.name = name
+            individual.sn = parseInt(sn)
           }
 
           let arr = []
