@@ -103,20 +103,24 @@ function App() {
   }
 
   async function extractData(sheet: any) {
-    const arr = sheet.A2.v.split('：')
-    // console.log(arr)
+    let namerow = 3
+    const arr = sheet['A' + namerow].v.split('：')
+    console.log(arr)
     let name
-    let sn
+    let sn = ''
     if (arr[2]) {
       // 序号：123 姓名：蔡正树
-      // console.log('found 2 ：')
+      console.log('found 2 ：')
       name = arr[2].replace(/ /g, '')
       sn = arr[1].replace(/[^\x00-\x7F]/g, "").replace(/ /g, '')
-    } else {
+    } else if(arr[1]) {
       // 姓名：蔡正树
-      // console.log('found 1 ：')
+      console.log('found 1 ：')
       name = arr[1].replace(/ /g, '')
-      sn = ''
+    } else {
+      // 姓名：| 蔡正树
+      console.log('found 0 ：')
+      name = sheet['B' + namerow].v
     }
     // const name = ''
     // const sn = ''
@@ -130,7 +134,7 @@ function App() {
     }
 
     let docs = []
-    let startRow = 6
+    let startRow = namerow + 4
     let sum = 0
     let count = 0
 
