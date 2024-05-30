@@ -290,7 +290,7 @@ function App() {
             const sn = fileName
             const name = fileName.replace(sn, '')
             individual.name = name
-            individual.sn = parseInt(sn)
+            // individual.sn = parseInt(sn)
           }
 
           let arr = []
